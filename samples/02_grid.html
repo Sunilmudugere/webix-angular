@@ -10,6 +10,10 @@
   <script type="text/javascript" src="../sources/index.js"></script>
   
   <script type="text/javascript" src="js/dataApp.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+    <script src="https://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
   <style type="text/css">
     .rating{
       text-align: center;
@@ -18,7 +22,7 @@
 </head>
 <body ng-controller="webixTestController">
   <div style="width:750px;">
-    <div webix-ui view="datatable" webix-data="records" autoheight="true" select="row">
+    <div webix-ui view="datatable"  webix-data="records" autoheight="true" editable="true">
       <div view="column" id="id" sort="int" css="rating">EmployeeId</div>
       <div view="column" id="firstName"   sort="string">First Name</div>
       <div view="column" id="lastName"  sort="string">Last Name</div>
@@ -29,7 +33,9 @@
     </div>
   </div>
 
-<br>
+<br/>
+<ul uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
+<br/>
 <button ng-click="addRecord()">Add Row</button>
 </body>
 </html>
