@@ -4,13 +4,13 @@
 
 var app = angular.module('webixApp', ['webix', 'ngAnimate', 'ngSanitize', 'ui.bootstrap']);
 
-app.controller("webixTestController", function ($scope, $http) {
+app.controller("webixTestController", function ($scope, $http, $uibModal) {
 
 	$scope.records = [];
-
-	$scope.totalItems = 60;
-	$scope.currentPage = 4;
-	$scope.itemPerPage = 5;
+	$scope.newEmployee = {};
+	$scope.totalItems = 100;
+	$scope.currentPage = 1;
+	$scope.itemPerPage = 10;
 
 	$scope.setPage = function (pageNo) {
 		$scope.currentPage = pageNo;
@@ -22,72 +22,55 @@ app.controller("webixTestController", function ($scope, $http) {
 	};
 	$scope.pageLoad = function () {
 		$http({
-			url: "http://localhost:5100/api/Employee/GetEmployees",
+			url: "http://localhost:5000/api/Employee/GetEmployees/" + $scope.currentPage + "/" + $scope.itemPerPage,
 			method: "GET",
 			params: { cur: $scope.currentPage, total: $scope.itemPerPage }
 		}).then(
 			function successCallback(response) {
-				console.log("Result : " + JSON.stringify(response));
-				$scope.records = response.data.employees;
+				console.log("Result : " + JSON.stringify(response));				
 				$scope.totalItems = response.data.pagination.totalItems;
+				$scope.records = response.data.employees;
+				$scope.currentPage = response.data.pagination.currentPage;
 			},
 		);
 	};
-
+	$scope.userConfig = {
+		view:"datatable",
+		columns:[{ id:"id", 		header:"Emp Id" ,width:200, editor:"text"},
+		{ id:"firstName", 		header:"First Name" ,width:200, editor:"text"},
+		{ id:"lastName", 		header:"Last Name" ,width:200, editor:"text"}],
+		autoheight="true"
+	}
 	$scope.pageLoad();
-	// $http.get("http://localhost:5100/api/Employee/GetEmployees").then(
-	//     function successCallback(response) {
-	// 			console.log("Result : "+JSON.stringify(response));
-	//       $scope.records = response;
-	// 		},
-	// 	);
-	// 	{ id:1, title:"The Shawshank Redemption", year:1994, votes:678790, rating:9.2, rank:1},
-	// { id:2, title:"The Godfather", year:1972, votes:511495, rating:9.2, rank:2},
-	// { id:3, title:"The Godfather: Part II", year:1974, votes:319352, rating:9.0, rank:3},
-	// { id:4, title:"The Good, the Bad and the Ugly", year:1966, votes:213030, rating:8.9, rank:4},
-	// { id:5, title:"My Fair Lady", year:1964, votes:533848, rating:8.9, rank:5},
-	// { id:6, title:"12 Angry Men", year:1957, votes:164558, rating:8.9, rank:6}
-	// ];
 
-	$scope.lines = [
-		{ id: 1, sales: 20, year: "02" },
-		{ id: 2, sales: 55, year: "03" },
-		{ id: 3, sales: 40, year: "04" },
-		{ id: 4, sales: 78, year: "05" },
-		{ id: 5, sales: 61, year: "06" },
-		{ id: 6, sales: 35, year: "07" },
-		{ id: 7, sales: 80, year: "08" },
-		{ id: 8, sales: 50, year: "09" },
-		{ id: 9, sales: 65, year: "10" },
-		{ id: 10, sales: 59, year: "11" }
-	];
+	$scope.submitForm = function () {
+		console.log(JSON.stringify($scope.newEmployee));
+		$http.post('http://localhost:5000/api/Employee/SaveEmployees', JSON.stringify($scope.newEmployee)).
+		then(
+			$scope.pageLoad()
+		);
+	}
+	$scope.addRecord = function (size, parentSelector) {
+		var parentElem = parentSelector ?
+			angular.element($document[0].querySelector('.modal-demo ' + parentSelector)) : undefined;
+		var modalInstance = $uibModal.open({
+			animation: true,
+			ariaLabelledBy: 'modal-title',
+			ariaDescribedBy: 'modal-body',
+			templateUrl: 'myModalContent.html',
+			controller: 'webixTestController',
+			size: size,
+			appendTo: parentElem,
+			resolve: {
 
-	$scope.addRecord = function () {
-		$scope.records.push({
-			title: "New Record",
-			rating: 999,
-			votes: 0,
-			year: 2013
+			}
 		});
-	};
 
-	$scope.changeLine = function (type) {
-		$$("mychart").define("type", type);
-		$$("mychart").render();
-	};
-
-	$scope.showDetails = function (id, details) {
-		$scope.selectedId = id.row;
-		$scope.eventType = details[1].type;
-		$scope.nativeElement = details[2].nodeName;
-		$scope.$digest();
-	};
-
-	$scope.showHeaderDetails = function (id, details) {
-		$scope.sortedCol = id;
-		$scope.sortDir = details[1];
-		$scope.sortType = details[2];
-		$scope.$digest();
+		modalInstance.result.then(function (selectedItem) {
+			$ctrl.selected = selectedItem;
+		}, function () {
+	//		$log.info('Modal dismissed at: ' + new Date());
+		});
 	};
 });
 
