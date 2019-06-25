@@ -99,7 +99,16 @@
   </script>
 
   <div style="width:750px;">
-      <div webix-ui="userConfig">
+      <div webix-ui view="datatable" webix-data="records" autoheight="true"  webix-event="onItemClick = getRow(id)" select = "row"
+       fillspace="true">
+          <div view="column" id="id" sort="int" css="rating" >EmployeeId</div>
+          <div view="column" id="firstName"   sort="string">First Name</div>
+          <div view="column" id="lastName"  sort="string">Last Name</div>
+          <div view="column" id="gender"  sort="string">Gender</div>
+          <div view="column" id="email"  sort="string">Email Id</div>
+          <div view="column" id="city"  sort="string">City</div>
+          <div view="column" id="country"  sort="string">Country</div>
+  </div>
     <!-- <div webix-ui view="datatable"  webix-data="records" autoheight="true" select="row" fillspace="true">
       <div view="column" id="id" sort="int" css="rating">EmployeeId</div>
       <div view="column" id="firstName"   sort="string">First Name</div>
@@ -115,5 +124,6 @@
 <ul uib-pagination total-items="totalItems" ng-model="currentPage" ng-change="pageChanged()"></ul>
 <br/>
 <button ng-click="addRecord()">Add Row</button>
+<button ng-click="deleteRecord()">Delete Row</button>
 </body>
 </html>
